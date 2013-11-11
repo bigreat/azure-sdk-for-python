@@ -22,7 +22,7 @@ from azure.storage import (Entity,
                            StorageServiceProperties,
                            TableService,
                            )
-from .util import (AzureTestCase,
+from util import (AzureTestCase,
                   credentials,
                   getUniqueTestRunID,
                   getUniqueNameBasedOnCurrentTime,
@@ -44,7 +44,7 @@ class TableServiceTest(AzureTestCase):
                           credentials.getProxyPassword())
 
         __uid = getUniqueTestRunID()
-        table_base_name = 'testtable%s' % (__uid)
+        table_base_name = u'testtable%s' % (__uid)
         self.table_name = getUniqueNameBasedOnCurrentTime(table_base_name)     
         self.additional_table_names = []
     
@@ -97,8 +97,8 @@ class TableServiceTest(AzureTestCase):
         entity.optional = None
         entity.ratio = 3.1
         entity.large = 9333111000
-        entity.Birthday = datetime(1973,10,0o4)
-        entity.birthday = datetime(1970,10,0o4)
+        entity.Birthday = datetime(1973,10,04)
+        entity.birthday = datetime(1970,10,04)
         entity.binary = None
         entity.other = EntityProperty('Edm.Int64', 20)
         entity.clsid = EntityProperty('Edm.Guid', 'c9da6455-213d-42c9-9a79-3e9149a57833')
@@ -119,8 +119,8 @@ class TableServiceTest(AzureTestCase):
                 'optional':None, 
                 'ratio':3.1, 
                 'large':9333111000, 
-                'Birthday':datetime(1973,10,0o4),
-                'birthday':datetime(1970,10,0o4),
+                'Birthday':datetime(1973,10,04),
+                'birthday':datetime(1970,10,04),
                 'binary':EntityProperty('Edm.Binary', None),
                 'other':EntityProperty('Edm.Int64', 20),
                 'clsid':EntityProperty('Edm.Guid', 'c9da6455-213d-42c9-9a79-3e9149a57833')}
@@ -137,7 +137,7 @@ class TableServiceTest(AzureTestCase):
                 'age':'abc',
                 'sex':'female',
                 'sign':'aquarius',
-                'birthday':datetime(1991,10,0o4)}
+                'birthday':datetime(1991,10,04)}
 
     def _assert_default_entity(self, entity):
         '''
@@ -150,8 +150,8 @@ class TableServiceTest(AzureTestCase):
         self.assertFalse(hasattr(entity, "aquarius"))
         self.assertEquals(entity.ratio, 3.1)
         self.assertEquals(entity.large, 9333111000)
-        self.assertEquals(entity.Birthday, datetime(1973,10,0o4))
-        self.assertEquals(entity.birthday, datetime(1970,10,0o4))
+        self.assertEquals(entity.Birthday, datetime(1973,10,04))
+        self.assertEquals(entity.birthday, datetime(1970,10,04))
         self.assertEquals(entity.other, 20)
         self.assertIsInstance(entity.clsid, EntityProperty)
         self.assertEquals(entity.clsid.type, 'Edm.Guid')
@@ -170,7 +170,7 @@ class TableServiceTest(AzureTestCase):
         self.assertFalse(hasattr(entity, "ratio"))
         self.assertFalse(hasattr(entity, "large"))
         self.assertFalse(hasattr(entity, "Birthday"))
-        self.assertEquals(entity.birthday, datetime(1991,10,0o4))
+        self.assertEquals(entity.birthday, datetime(1991,10,04))
         self.assertFalse(hasattr(entity, "other"))
         self.assertFalse(hasattr(entity, "clsid"))
 
@@ -187,8 +187,8 @@ class TableServiceTest(AzureTestCase):
         self.assertEquals(entity.sign, 'aquarius')
         self.assertEquals(entity.ratio, 3.1)
         self.assertEquals(entity.large, 9333111000)
-        self.assertEquals(entity.Birthday, datetime(1973,10,0o4))
-        self.assertEquals(entity.birthday, datetime(1991,10,0o4))
+        self.assertEquals(entity.Birthday, datetime(1973,10,04))
+        self.assertEquals(entity.birthday, datetime(1991,10,04))
         self.assertEquals(entity.other, 20)
         self.assertIsInstance(entity.clsid, EntityProperty)
         self.assertEquals(entity.clsid.type, 'Edm.Guid')
@@ -582,7 +582,7 @@ class TableServiceTest(AzureTestCase):
         # Act
         sent_entity = self._create_updated_entity_dict('MyPartition','1')
         with self.assertRaises(WindowsAzureError):
-            self.tc.update_entity(self.table_name, 'MyPartition', '1', sent_entity, if_match='W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"')
+            self.tc.update_entity(self.table_name, 'MyPartition', '1', sent_entity, if_match=u'W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"')
 
         # Assert
 
@@ -682,7 +682,7 @@ class TableServiceTest(AzureTestCase):
         # Act
         sent_entity = self._create_updated_entity_dict('MyPartition','1')
         with self.assertRaises(WindowsAzureError):
-            self.tc.merge_entity(self.table_name, 'MyPartition', '1', sent_entity, if_match='W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"')
+            self.tc.merge_entity(self.table_name, 'MyPartition', '1', sent_entity, if_match=u'W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"')
 
         # Assert
 
@@ -726,7 +726,7 @@ class TableServiceTest(AzureTestCase):
 
         # Act
         with self.assertRaises(WindowsAzureError):
-            self.tc.delete_entity(self.table_name, 'MyPartition', '1', if_match='W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"')
+            self.tc.delete_entity(self.table_name, 'MyPartition', '1', if_match=u'W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"')
 
         # Assert
 
@@ -1045,28 +1045,28 @@ class TableServiceTest(AzureTestCase):
         ''' regression test for github issue #57'''
         # Act
         self._create_table(self.table_name)
-        self.tc.insert_entity(self.table_name, {'PartitionKey': 'test', 'RowKey': 'test1', 'Description': 'ꀕ'}) 
+        self.tc.insert_entity(self.table_name, {'PartitionKey': 'test', 'RowKey': 'test1', 'Description': u'ꀕ'}) 
         self.tc.insert_entity(self.table_name, {'PartitionKey': 'test', 'RowKey': 'test2', 'Description': 'ꀕ'})        
         resp = self.tc.query_entities(self.table_name, "PartitionKey eq 'test'")   
         # Assert
         self.assertEquals(len(resp), 2)
-        self.assertEquals(resp[0].Description, 'ꀕ')
-        self.assertEquals(resp[1].Description, 'ꀕ')
+        self.assertEquals(resp[0].Description, u'ꀕ')
+        self.assertEquals(resp[1].Description, u'ꀕ')
 
     def test_unicode_property_name(self):
         # Act
         self._create_table(self.table_name)
-        self.tc.insert_entity(self.table_name, {'PartitionKey': 'test', 'RowKey': 'test1', '啊齄丂狛狜': 'ꀕ'}) 
-        self.tc.insert_entity(self.table_name, {'PartitionKey': 'test', 'RowKey': 'test2', '啊齄丂狛狜': 'hello'})        
+        self.tc.insert_entity(self.table_name, {'PartitionKey': 'test', 'RowKey': 'test1', u'啊齄丂狛狜': u'ꀕ'}) 
+        self.tc.insert_entity(self.table_name, {'PartitionKey': 'test', 'RowKey': 'test2', u'啊齄丂狛狜': 'hello'})        
         resp = self.tc.query_entities(self.table_name, "PartitionKey eq 'test'")   
         # Assert
         self.assertEquals(len(resp), 2)
-        self.assertEquals(resp[0].__dict__['啊齄丂狛狜'], 'ꀕ')
-        self.assertEquals(resp[1].__dict__['啊齄丂狛狜'], 'hello')
+        self.assertEquals(resp[0].__dict__[u'啊齄丂狛狜'], u'ꀕ')
+        self.assertEquals(resp[1].__dict__[u'啊齄丂狛狜'], u'hello')
 
     def test_unicode_create_table_unicode_name(self):
         # Arrange
-        self.table_name = str(self.table_name) + '啊齄丂狛狜'
+        self.table_name = unicode(self.table_name) + u'啊齄丂狛狜'
 
         # Act
         with self.assertRaises(WindowsAzureError):

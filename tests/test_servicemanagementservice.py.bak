@@ -29,7 +29,7 @@ from azure.servicemanagement import (CertificateSetting,
                                      WindowsConfigurationSet,
                                      )
 from azure.storage.blobservice import BlobService
-from .util import (AzureTestCase,
+from util import (AzureTestCase,
                   credentials,
                   getUniqueTestRunID,
                   getUniqueNameBasedOnCurrentTime,
@@ -346,8 +346,8 @@ class ServiceManagementServiceTest(AzureTestCase):
     def _create_vm_linux(self, service_name, deployment_name, role_name, target_container_name, target_blob_name):
         image_name = self._linux_image_name()
         media_link = 'http://' + credentials.getStorageServicesName() + '.blob.core.windows.net/' + target_container_name + '/' + target_blob_name
-        pk = PublicKey(SERVICE_CERT_THUMBPRINT, '/home/unittest/.ssh/authorized_keys')
-        pair = KeyPair(SERVICE_CERT_THUMBPRINT, '/home/unittest/.ssh/id_rsa')
+        pk = PublicKey(SERVICE_CERT_THUMBPRINT, u'/home/unittest/.ssh/authorized_keys')
+        pair = KeyPair(SERVICE_CERT_THUMBPRINT, u'/home/unittest/.ssh/id_rsa')
         system = LinuxConfigurationSet('computername', 'unittest', 'u7;9jbp!', True)
         system.ssh.public_keys.public_keys.append(pk)
         system.ssh.key_pairs.key_pairs.append(pair)
@@ -961,8 +961,8 @@ class ServiceManagementServiceTest(AzureTestCase):
         role_name = self.hosted_service_name
         image_name = self._linux_image_name()
         media_link = 'http://' + credentials.getStorageServicesName() + '.blob.core.windows.net/' + self.container_name + '/' + role_name + '.vhd'
-        pk = PublicKey(SERVICE_CERT_THUMBPRINT, '/home/unittest/.ssh/authorized_keys')
-        pair = KeyPair(SERVICE_CERT_THUMBPRINT, '/home/unittest/.ssh/id_rsa')
+        pk = PublicKey(SERVICE_CERT_THUMBPRINT, u'/home/unittest/.ssh/authorized_keys')
+        pair = KeyPair(SERVICE_CERT_THUMBPRINT, u'/home/unittest/.ssh/id_rsa')
 
         self._create_hosted_service(service_name)
         self._create_service_certificate(service_name, SERVICE_CERT_DATA, SERVICE_CERT_FORMAT, SERVICE_CERT_PASSWORD)

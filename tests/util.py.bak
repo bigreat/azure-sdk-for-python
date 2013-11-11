@@ -28,10 +28,10 @@ class Credentials(object):
         credentialsFilename = "windowsazurecredentials.json"
         tmpName = os.path.join(os.getcwd(), credentialsFilename)
         if not os.path.exists(tmpName):
-            if "USERPROFILE" in os.environ:
+            if os.environ.has_key("USERPROFILE"):
                 tmpName = os.path.join(os.environ["USERPROFILE"], 
                                        credentialsFilename)
-            elif "HOME" in os.environ:
+            elif os.environ.has_key("HOME"):
                 tmpName = os.path.join(os.environ["HOME"], 
                                        credentialsFilename)
         if not os.path.exists(tmpName):
@@ -42,37 +42,37 @@ class Credentials(object):
             self.ns = json.load(f)
 
     def getManagementCertFile(self):
-        return self.ns['managementcertfile'] 
+        return self.ns[u'managementcertfile'] 
 
     def getSubscriptionId(self):
-        return self.ns['subscriptionid'] 
+        return self.ns[u'subscriptionid'] 
 
     def getServiceBusKey(self):
-        return self.ns['servicebuskey'] 
+        return self.ns[u'servicebuskey'] 
 
     def getServiceBusNamespace(self):
-        return self.ns['servicebusns']
+        return self.ns[u'servicebusns']
 
     def getStorageServicesKey(self):
-        return self.ns['storageserviceskey']
+        return self.ns[u'storageserviceskey']
 
     def getStorageServicesName(self):
-        return self.ns['storageservicesname']
+        return self.ns[u'storageservicesname']
 
     def getLinuxOSVHD(self):
-        return self.ns['linuxosvhd']
+        return self.ns[u'linuxosvhd']
 
     def getProxyHost(self):
-        return self.ns['proxyhost']
+        return self.ns[u'proxyhost']
 
     def getProxyPort(self):
-        return self.ns['proxyport']
+        return self.ns[u'proxyport']
 
     def getProxyUser(self):
-        return self.ns['proxyuser']
+        return self.ns[u'proxyuser']
 
     def getProxyPassword(self):
-        return self.ns['proxypassword']
+        return self.ns[u'proxypassword']
 
 credentials = Credentials()
 
@@ -86,7 +86,7 @@ def getUniqueTestRunID():
     - not really unique now; just machine specific
     '''
     from os import environ
-    if "COMPUTERNAME" in environ:
+    if environ.has_key("COMPUTERNAME"):
         ret_val = environ["COMPUTERNAME"]
     else:
         import socket

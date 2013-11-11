@@ -33,7 +33,7 @@ from azure.storage.sharedaccesssignature import (Permission,
                                                  SIGNED_SIGNATURE,
                                                  SIGNED_START,
                                                  )
-from .util import (AzureTestCase,
+from util import (AzureTestCase,
                   credentials,
                   getUniqueTestRunID,
                   getUniqueNameBasedOnCurrentTime,
