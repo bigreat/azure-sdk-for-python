@@ -64,7 +64,7 @@ class _StorageClient(object):
         self.use_local_storage = False
 
         #check whether it is run in emulator. 
-        if EMULATED in os.environ:
+        if os.environ.has_key(EMULATED):
             if os.environ[EMULATED].lower() == 'false':
                 self.is_emulated = False
             else:
@@ -82,9 +82,9 @@ class _StorageClient(object):
                 self.account_key = DEV_ACCOUNT_KEY
                 self.use_local_storage = True
             else:
-                if AZURE_STORAGE_ACCOUNT in os.environ:
+                if os.environ.has_key(AZURE_STORAGE_ACCOUNT):
                     self.account_name = os.environ[AZURE_STORAGE_ACCOUNT]
-                if AZURE_STORAGE_ACCESS_KEY in os.environ:
+                if os.environ.has_key(AZURE_STORAGE_ACCESS_KEY):
                     self.account_key = os.environ[AZURE_STORAGE_ACCESS_KEY]
 
         if not self.account_name or not self.account_key:
@@ -106,7 +106,7 @@ class _StorageClient(object):
         res = type(self)(self.account_name, self.account_key, self.protocol)
         old_filter = self._filter
         def new_filter(request):
-            return list(filter(request, old_filter))
+            return filter(request, old_filter)
                     
         res._filter = new_filter
         return res

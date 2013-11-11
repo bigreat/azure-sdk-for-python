@@ -55,7 +55,7 @@ True
 True
 
 """
-from .util import credentials
+from util import credentials
 
 name = credentials.getStorageServicesName()
 key = credentials.getStorageServicesKey()

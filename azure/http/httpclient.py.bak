@@ -19,8 +19,8 @@ import datetime
 import time
 import hashlib
 import hmac
-import urllib.request, urllib.error, urllib.parse
-import http.client
+import urllib2
+import httplib
 import ast
 import sys
 from xml.dom import minidom
@@ -75,7 +75,7 @@ class _HTTPClient:
         ''' Create connection for the request. '''
         protocol = request.protocol_override if request.protocol_override else self.protocol
         target_host = request.host
-        target_port = http.client.HTTP_PORT if protocol == 'http' else http.client.HTTPS_PORT
+        target_port = httplib.HTTP_PORT if protocol == 'http' else httplib.HTTPS_PORT
 
         # If on Windows then use winhttp HTTPConnection instead of httplib HTTPConnection due to the 
         # bugs in httplib HTTPSConnection. We've reported the issue to the Python 
@@ -96,9 +96,9 @@ class _HTTPClient:
                 port = target_port
 
             if protocol == 'http':
-                connection = http.client.HTTPConnection(host, int(port))
+                connection = httplib.HTTPConnection(host, int(port))
             else:
-                connection = http.client.HTTPSConnection(host, int(port), cert_file=self.cert_file)
+                connection = httplib.HTTPSConnection(host, int(port), cert_file=self.cert_file)
 
         if self.proxy_host:
             headers = None
@@ -127,8 +127,8 @@ class _HTTPClient:
     def send_request_body(self, connection, request_body):
         if request_body:
             connection.send(request_body)
-        elif (not isinstance(connection, http.client.HTTPSConnection) and 
-              not isinstance(connection, http.client.HTTPConnection)):
+        elif (not isinstance(connection, httplib.HTTPSConnection) and 
+              not isinstance(connection, httplib.HTTPConnection)):
             connection.send(None)
      
     def perform_request(self, request):

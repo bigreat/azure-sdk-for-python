@@ -188,8 +188,8 @@ class Message(WindowsAzureData):
 
         # Adds custom properties
         if self.custom_properties:
-            for name, value in self.custom_properties.items():
-                if isinstance(value, str):
+            for name, value in self.custom_properties.iteritems():
+                if isinstance(value, unicode):
                     request.headers.append((name, '"' + value.encode('utf-8') + '"'))
                 elif isinstance(value, str):
                     request.headers.append((name, '"' + str(value) + '"'))
@@ -292,7 +292,7 @@ def _convert_xml_to_rule(xmlstr):
                     setattr(rule, 'action_expression', action_expression.nodeValue)
    
     #extract id, updated and name value from feed entry and set them of rule.
-    for name, value in _get_entry_properties(xmlstr, True, '/rules').items():
+    for name, value in _get_entry_properties(xmlstr, True, '/rules').iteritems():
         setattr(rule, name, value)
 
     return rule
@@ -374,7 +374,7 @@ def _convert_xml_to_queue(xmlstr):
         raise WindowsAzureError(_ERROR_QUEUE_NOT_FOUND)
 
     #extract id, updated and name value from feed entry and set them of queue.
-    for name, value in _get_entry_properties(xmlstr, True).items():
+    for name, value in _get_entry_properties(xmlstr, True).iteritems():
         setattr(queue, name, value)
 
     return queue
@@ -435,7 +435,7 @@ def _convert_xml_to_topic(xmlstr):
         raise WindowsAzureError(_ERROR_TOPIC_NOT_FOUND)
 
     #extract id, updated and name value from feed entry and set them of topic.
-    for name, value in _get_entry_properties(xmlstr, True).items():
+    for name, value in _get_entry_properties(xmlstr, True).iteritems():
         setattr(topic, name, value)
     return topic
 
@@ -486,7 +486,7 @@ def _convert_xml_to_subscription(xmlstr):
         if node_value is not None:
             subscription.message_count = int(node_value)
 
-    for name, value in _get_entry_properties(xmlstr, True, '/subscriptions').items():
+    for name, value in _get_entry_properties(xmlstr, True, '/subscriptions').iteritems():
         setattr(subscription, name, value)
 
     return subscription

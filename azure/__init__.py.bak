@@ -16,7 +16,7 @@ import ast
 import base64
 import sys
 import types
-import urllib.request, urllib.error, urllib.parse
+import urllib2
 
 from datetime import datetime
 from xml.dom import minidom
@@ -154,7 +154,7 @@ def _get_children_from_path(node, *path):
     not cousins.'''
     cur = node
     for index, child in enumerate(path):    
-        if isinstance(child, str):
+        if isinstance(child, basestring):
             next = _get_child_nodes(cur, child)
         else:
             next = _get_child_nodesNS(cur, *child)
@@ -220,13 +220,13 @@ def _get_serialization_name(element_name):
     return ''.join(name.capitalize() for name in element_name.split('_'))
 
 def _str(value):
-    if isinstance(value, str):
+    if isinstance(value, unicode):
         return value.encode('utf-8')
 
     return str(value)
 
 def _str_or_none(value):
-    if isinstance(value, str):
+    if isinstance(value, unicode):
         return value.encode('utf-8')
 
     if value is None:
@@ -266,7 +266,7 @@ def _convert_class_to_xml(source, xml_prefix = True):
     elif isinstance(source, WindowsAzureData):
         class_name = source.__class__.__name__
         xmlstr += '<' + class_name + '>'
-        for name, value in vars(source).items():
+        for name, value in vars(source).iteritems():
             if value is not None:
                 if isinstance(value, list) or isinstance(value, WindowsAzureData):
                     xmlstr += _convert_class_to_xml(value, False)
@@ -285,7 +285,7 @@ def _find_namespaces_from_child(parent, child, namespaces):
             return True
         if _find_namespaces_from_child(cur_child, child, namespaces):
             # we are the parent node
-            for key in list(cur_child.attributes.keys()):
+            for key in cur_child.attributes.keys():
                 if key.startswith('xmlns:') or key == 'xmlns': 
                     namespaces[key] = cur_child.attributes[key]
             break
@@ -293,7 +293,7 @@ def _find_namespaces_from_child(parent, child, namespaces):
 
 def _find_namespaces(parent, child):
     res = {}
-    for key in list(parent.documentElement.attributes.keys()):
+    for key in parent.documentElement.attributes.keys():
         if key.startswith('xmlns:') or key == 'xmlns': 
             res[key] = parent.documentElement.attributes[key]
     _find_namespaces_from_child(parent, child, res)
@@ -302,7 +302,7 @@ def _find_namespaces(parent, child):
 def _clone_node_with_namespaces(node_to_clone, original_doc):
     clone = node_to_clone.cloneNode(True)
     
-    for key, value in _find_namespaces(original_doc, node_to_clone).items():
+    for key, value in _find_namespaces(original_doc, node_to_clone).iteritems():
         clone.attributes[key] = value
 
     return clone
@@ -432,7 +432,7 @@ def _fill_data_minidom(xmldoc, element_name, data_member):
         return value
     elif isinstance(data_member, datetime):
         return _to_datetime(value)
-    elif type(data_member) is bool:
+    elif type(data_member) is types.BooleanType:
         return value.lower() != 'false'
     else:
         return type(data_member)(value)
@@ -441,7 +441,7 @@ def _get_node_value(xmlelement, data_type):
     value = xmlelement.firstChild.nodeValue
     if data_type is datetime:
         return _to_datetime(value)
-    elif data_type is bool:
+    elif data_type is types.BooleanType:
         return value.lower() != 'false'
     else:
         return data_type(value)
@@ -487,7 +487,7 @@ containers member populated with the results.
         for child in _get_children_from_path(enum_results, resp_type, resp_type[:-1]):
             items.append(_fill_instance_element(child, item_type))
 
-        for name, value in vars(return_obj).items():
+        for name, value in vars(return_obj).iteritems():
             if name == resp_type.lower():   # queues, Queues, this is the list its self which we populated above
                 # the list its self.
                 continue
@@ -519,7 +519,7 @@ def _parse_response(response, return_type):
 
 def _fill_data_to_return_object(node, return_obj):
     members = dict(vars(return_obj))
-    for name, value in members.items():
+    for name, value in members.iteritems():
         if isinstance(value, _list_of):
             setattr(return_obj, name, _fill_list_of(node, value.list_type, value.xml_element_name))
         elif isinstance(value, _scalar_list_of):
@@ -612,14 +612,14 @@ def _update_request_uri_query(request):
                     name, _, value = query.partition('=')
                     request.query.append((name, value))
 
-    request.path = urllib.parse.quote(request.path, '/()$=\',')
+    request.path = urllib2.quote(request.path, '/()$=\',')
 
     #add encoded queries to request.path. 
     if request.query:
         request.path += '?' 
         for name, value in request.query:
             if value is not None:
-                request.path += name + '=' + urllib.parse.quote(value, '/()$=\',') + '&'
+                request.path += name + '=' + urllib2.quote(value, '/()$=\',') + '&'
         request.path = request.path[:-1]
 
     return request.path, request.query
@@ -673,7 +673,7 @@ def _parse_response_for_dict_prefix(response, prefixes):
     return_dict = {}    
     orig_dict = _parse_response_for_dict(response)
     if orig_dict:
-        for name, value in orig_dict.items():
+        for name, value in orig_dict.iteritems():
             for prefix_value in prefixes:
                 if name.lower().startswith(prefix_value.lower()):
                     return_dict[name] = value
@@ -689,7 +689,7 @@ def _parse_response_for_dict_filter(response, filter):
     return_dict = {}    
     orig_dict = _parse_response_for_dict(response)
     if orig_dict:
-        for name, value in orig_dict.items():
+        for name, value in orig_dict.iteritems():
             if name.lower() in filter:
                 return_dict[name] = value
         return return_dict

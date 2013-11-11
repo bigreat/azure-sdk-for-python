@@ -15,7 +15,7 @@
 from ctypes import c_void_p, c_long, c_ulong, c_longlong, c_ulonglong, c_short, c_ushort, c_wchar_p, c_byte, c_size_t
 from ctypes import byref, Structure, Union, POINTER, WINFUNCTYPE, HRESULT, oledll, WinDLL, cast, create_string_buffer
 import ctypes
-import urllib.request, urllib.error, urllib.parse  
+import urllib2  
 
 #------------------------------------------------------------------------------
 #  Constants that are used in COM operations
@@ -182,7 +182,7 @@ class GUID(Structure):
 
     def __init__(self, name=None):
         if name is not None:
-            _CLSIDFromString(str(name), byref(self))
+            _CLSIDFromString(unicode(name), byref(self))
 
 
 class _WinHttpRequest(c_void_p):
@@ -292,7 +292,7 @@ class _WinHttpRequest(c_void_p):
         ''' Sets up the host and the port for the HTTP CONNECT Tunnelling.'''
         url = host
         if port:
-            url = url + ':' + port
+            url = url + u':' + port
 
         var_host = VARIANT.create_bstr_from_str(url)
         var_empty = VARIANT.create_empty()
@@ -331,7 +331,7 @@ class _HTTPConnection:
 
     def __init__(self, host, cert_file=None, key_file=None, protocol='http'):
         ''' initialize the IWinHttpWebRequest Com Object.'''
-        self.host = str(host)
+        self.host = unicode(host)
         self.cert_file = cert_file
         self._httprequest = _WinHttpRequest()
         self.protocol = protocol
@@ -342,21 +342,21 @@ class _HTTPConnection:
         
     def set_tunnel(self, host, port=None, headers=None):
         ''' Sets up the host and the port for the HTTP CONNECT Tunnelling. '''
-        self._httprequest.set_tunnel(str(host), str(str(port)))
+        self._httprequest.set_tunnel(unicode(host), unicode(str(port)))
 
     def set_proxy_credentials(self, user, password):
-        self._httprequest.set_proxy_credentials(str(user), str(password))
+        self._httprequest.set_proxy_credentials(unicode(user), unicode(password))
 
     def putrequest(self, method, uri):
         ''' Connects to host and sends the request. '''
 
-        protocol = str(self.protocol + '://')
-        url = protocol + self.host + str(uri)
-        self._httprequest.open(str(method), url)
+        protocol = unicode(self.protocol + '://')
+        url = protocol + self.host + unicode(uri)
+        self._httprequest.open(unicode(method), url)
 
         #sets certificate for the connection if cert_file is set.
         if self.cert_file is not None:
-            self._httprequest.set_client_certificate(str(self.cert_file))
+            self._httprequest.set_client_certificate(unicode(self.cert_file))
 
     def putheader(self, name, value):
         ''' Sends the headers of request. '''

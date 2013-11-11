@@ -20,7 +20,7 @@ from azure.storage import (BlobService,
                            QueueService,
                            TableService,
                            )
-from .util import (AzureTestCase,
+from util import (AzureTestCase,
                   credentials,
                   getUniqueTestRunID,
                   getUniqueNameBasedOnCurrentTime,

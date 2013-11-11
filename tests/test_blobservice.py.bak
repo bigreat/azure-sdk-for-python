@@ -14,7 +14,7 @@
 #--------------------------------------------------------------------------
 import base64
 import datetime
-import http.client
+import httplib
 import os
 import time
 import unittest
@@ -58,7 +58,7 @@ from azure.storage.sharedaccesssignature import (Permission,
                                                  SIGNED_SIGNATURE,
                                                  SIGNED_START,
                                                  )
-from .util import (AzureTestCase,
+from util import (AzureTestCase,
                   credentials,
                   getUniqueTestRunID,
                   getUniqueNameBasedOnCurrentTime,
@@ -78,7 +78,7 @@ class BlobServiceTest(AzureTestCase):
 
         __uid = getUniqueTestRunID()
 
-        container_base_name = 'mytestcontainer%s' % (__uid)
+        container_base_name = u'mytestcontainer%s' % (__uid)
 
         self.container_name = getUniqueNameBasedOnCurrentTime(container_base_name)
         self.additional_container_names = []
@@ -145,7 +145,7 @@ class BlobServiceTest(AzureTestCase):
         return self._web_request('DELETE', host, url, None)
 
     def _web_request(self, method, host, url, content):
-        connection = http.client.HTTPConnection(host)
+        connection = httplib.HTTPConnection(host)
         connection.putrequest(method, url)
         connection.putheader('Content-Type', 'application/octet-stream;Charset=UTF-8')
         if content is not None:
@@ -167,11 +167,11 @@ class BlobServiceTest(AzureTestCase):
     #--Test cases for blob service --------------------------------------------
     def test_create_blob_service_missing_arguments(self):
         # Arrange
-        if AZURE_STORAGE_ACCOUNT in os.environ:
+        if os.environ.has_key(AZURE_STORAGE_ACCOUNT):
             del os.environ[AZURE_STORAGE_ACCOUNT]
-        if AZURE_STORAGE_ACCESS_KEY in os.environ:
+        if os.environ.has_key(AZURE_STORAGE_ACCESS_KEY):
             del os.environ[AZURE_STORAGE_ACCESS_KEY]
-        if EMULATED in os.environ:
+        if os.environ.has_key(EMULATED):
             del os.environ[EMULATED]
 
         # Act
@@ -188,9 +188,9 @@ class BlobServiceTest(AzureTestCase):
         # Act
         bs = BlobService()
 
-        if AZURE_STORAGE_ACCOUNT in os.environ:
+        if os.environ.has_key(AZURE_STORAGE_ACCOUNT):
             del os.environ[AZURE_STORAGE_ACCOUNT]
-        if AZURE_STORAGE_ACCESS_KEY in os.environ:
+        if os.environ.has_key(AZURE_STORAGE_ACCESS_KEY):
             del os.environ[AZURE_STORAGE_ACCESS_KEY]
 
         # Assert
@@ -206,7 +206,7 @@ class BlobServiceTest(AzureTestCase):
         # Act
         bs = BlobService()
 
-        if EMULATED in os.environ:
+        if os.environ.has_key(EMULATED):
             del os.environ[EMULATED]
 
         # Assert
@@ -223,7 +223,7 @@ class BlobServiceTest(AzureTestCase):
         with self.assertRaises(WindowsAzureError):
             bs = BlobService()
 
-        if EMULATED in os.environ:
+        if os.environ.has_key(EMULATED):
             del os.environ[EMULATED]
 
         # Assert
@@ -237,11 +237,11 @@ class BlobServiceTest(AzureTestCase):
         # Act
         bs = BlobService()
 
-        if EMULATED in os.environ:
+        if os.environ.has_key(EMULATED):
             del os.environ[EMULATED]
-        if AZURE_STORAGE_ACCOUNT in os.environ:
+        if os.environ.has_key(AZURE_STORAGE_ACCOUNT):
             del os.environ[AZURE_STORAGE_ACCOUNT]
-        if AZURE_STORAGE_ACCESS_KEY in os.environ:
+        if os.environ.has_key(AZURE_STORAGE_ACCESS_KEY):
             del os.environ[AZURE_STORAGE_ACCESS_KEY]
 
         # Assert
@@ -1210,7 +1210,7 @@ class BlobServiceTest(AzureTestCase):
         self._create_container_and_block_blob(self.container_name, 'blob1', '')
 
         # Act
-        for i in range(5):
+        for i in xrange(5):
             resp = self.bc.put_block(self.container_name, 
                                      'blob1',
                                      'block %d' % (i),
@@ -1358,12 +1358,12 @@ class BlobServiceTest(AzureTestCase):
             for header in request.headers:
                 self.assertIsInstance(header, tuple)
                 for item in header:
-                    self.assertIsInstance(item, (str, str, type(None)))
-            self.assertIsInstance(request.host, (str, str))
-            self.assertIsInstance(request.method, (str, str))
-            self.assertIsInstance(request.path, (str, str))
+                    self.assertIsInstance(item, (str, unicode, type(None)))
+            self.assertIsInstance(request.host, (str, unicode))
+            self.assertIsInstance(request.method, (str, unicode))
+            self.assertIsInstance(request.path, (str, unicode))
             self.assertIsInstance(request.query, list)
-            self.assertIsInstance(request.body, (str, str))
+            self.assertIsInstance(request.body, (str, unicode))
             response = next(request)
                 
             self.assertIsInstance(response, HTTPResponse)
@@ -1372,7 +1372,7 @@ class BlobServiceTest(AzureTestCase):
             for header in response.headers:
                 self.assertIsInstance(header, tuple)
                 for item in header:
-                    self.assertIsInstance(item, (str, str))
+                    self.assertIsInstance(item, (str, unicode))
             self.assertIsInstance(response.status, int)
             return response
 
@@ -1408,7 +1408,7 @@ class BlobServiceTest(AzureTestCase):
 
     def test_unicode_create_container_unicode_name(self):
         # Arrange
-        self.container_name = str(self.container_name) + '啊齄丂狛狜'
+        self.container_name = unicode(self.container_name) + u'啊齄丂狛狜'
 
         # Act
         with self.assertRaises(WindowsAzureError):
@@ -1430,7 +1430,7 @@ class BlobServiceTest(AzureTestCase):
 
     def test_unicode_get_blob_unicode_data(self):
         # Arrange
-        self._create_container_and_block_blob(self.container_name, 'blob1', 'hello world啊齄丂狛狜')
+        self._create_container_and_block_blob(self.container_name, 'blob1', u'hello world啊齄丂狛狜')
 
         # Act
         blob = self.bc.get_blob(self.container_name, 'blob1')

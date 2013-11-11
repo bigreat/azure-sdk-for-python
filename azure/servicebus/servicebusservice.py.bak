@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-import http.client
+import httplib
 import os
 import sys
 import time
-import urllib.request, urllib.error, urllib.parse
+import urllib2
 
 from azure import (WindowsAzureError,
                    SERVICE_BUS_HOST_BASE,
@@ -69,13 +69,13 @@ class ServiceBusService:
         #get service namespace, account key and issuer. If they are set when constructing, then use them.
         #else find them from environment variables.
         if not service_namespace:
-            if AZURE_SERVICEBUS_NAMESPACE in os.environ:
+            if os.environ.has_key(AZURE_SERVICEBUS_NAMESPACE):
                 self.service_namespace = os.environ[AZURE_SERVICEBUS_NAMESPACE]
         if not account_key:
-            if AZURE_SERVICEBUS_ACCESS_KEY in os.environ:
+            if os.environ.has_key(AZURE_SERVICEBUS_ACCESS_KEY):
                 self.account_key = os.environ[AZURE_SERVICEBUS_ACCESS_KEY]
         if not issuer:
-            if AZURE_SERVICEBUS_ISSUER in os.environ:
+            if os.environ.has_key(AZURE_SERVICEBUS_ISSUER):
                 self.issuer = os.environ[AZURE_SERVICEBUS_ISSUER]
         
         if not self.service_namespace or not self.account_key or not self.issuer:
@@ -97,7 +97,7 @@ class ServiceBusService:
                                 self.issuer)
         old_filter = self._filter
         def new_filter(request):
-            return list(filter(request, old_filter))
+            return filter(request, old_filter)
                     
         res._filter = new_filter
         return res
@@ -829,7 +829,7 @@ class ServiceBusService:
         wrap_scope = 'http://' + host + path + self.issuer + self.account_key
 
         # Check whether has unexpired cache, return cached token if it is still usable. 
-        if wrap_scope in _tokens:
+        if _tokens.has_key(wrap_scope):
             token = _tokens[wrap_scope]
             if not self._token_is_expired(token):
                 return token
@@ -840,14 +840,14 @@ class ServiceBusService:
         request.host = host.replace('.servicebus.', '-sb.accesscontrol.')
         request.method = 'POST'
         request.path = '/WRAPv0.9'
-        request.body = ('wrap_name=' + urllib.parse.quote(self.issuer) + '&wrap_password=' +
-                        urllib.parse.quote(self.account_key) + '&wrap_scope=' + 
-                        urllib.parse.quote('http://' + host + path))
+        request.body = ('wrap_name=' + urllib2.quote(self.issuer) + '&wrap_password=' +
+                        urllib2.quote(self.account_key) + '&wrap_scope=' + 
+                        urllib2.quote('http://' + host + path))
         request.headers.append(('Content-Length', str(len(request.body))))
         resp = self._httpclient.perform_request(request)
 
         token = resp.body
-        token = urllib.parse.unquote(token[token.find('=')+1:token.rfind('&')])
+        token = urllib2.unquote(token[token.find('=')+1:token.rfind('&')])
         _tokens[wrap_scope] = token
 
         return token

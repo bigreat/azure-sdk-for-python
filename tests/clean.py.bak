@@ -39,7 +39,7 @@ print('')
 print('Enter YES to proceed, or anything else to cancel')
 print('')
 
-input = input('>')
+input = raw_input('>')
 if input == 'YES':
     print('Cleaning storage account...')
 

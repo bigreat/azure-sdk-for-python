@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #--------------------------------------------------------------------------
-import urllib.request, urllib.error, urllib.parse
+import urllib2
 import azure
 from azure.http.httpclient import _HTTPClient
 from azure.http import HTTPError, HTTPRequest
@@ -64,7 +64,7 @@ class _BatchClient(_HTTPClient):
                 raise WindowsAzureError(azure._ERROR_CANNOT_FIND_PARTITION_KEY)
             return part_key[0].firstChild.nodeValue
         else:
-            uri = urllib.parse.unquote(request.path)
+            uri = urllib2.unquote(request.path)
             pos1 = uri.find('PartitionKey=\'')
             pos2 = uri.find('\',', pos1)
             if pos1 == -1 or pos2 == -1:
@@ -86,7 +86,7 @@ class _BatchClient(_HTTPClient):
                 raise WindowsAzureError(azure._ERROR_CANNOT_FIND_ROW_KEY)
             return row_key[0].firstChild.nodeValue
         else:
-            uri = urllib.parse.unquote(request.path)
+            uri = urllib2.unquote(request.path)
             pos1 = uri.find('RowKey=\'')
             pos2 = uri.find('\')', pos1)
             if pos1 == -1 or pos2 == -1:

@@ -31,7 +31,7 @@ from azure.servicebus import (AZURE_SERVICEBUS_NAMESPACE,
                               Subscription,
                               Topic,
                               )
-from .util import (AzureTestCase,
+from util import (AzureTestCase,
                   credentials,
                   getUniqueTestRunID,
                   getUniqueNameBasedOnCurrentTime,
@@ -51,8 +51,8 @@ class ServiceBusTest(AzureTestCase):
 
         __uid = getUniqueTestRunID()
 
-        queue_base_name = 'mytestqueue%s' % (__uid)
-        topic_base_name = 'mytesttopic%s' % (__uid)
+        queue_base_name = u'mytestqueue%s' % (__uid)
+        topic_base_name = u'mytesttopic%s' % (__uid)
 
         self.queue_name = getUniqueNameBasedOnCurrentTime(queue_base_name)
         self.topic_name = getUniqueNameBasedOnCurrentTime(topic_base_name)
@@ -104,11 +104,11 @@ class ServiceBusTest(AzureTestCase):
     #--Test cases for service bus service -------------------------------------
     def test_create_service_bus_missing_arguments(self):
         # Arrange
-        if AZURE_SERVICEBUS_NAMESPACE in os.environ:
+        if os.environ.has_key(AZURE_SERVICEBUS_NAMESPACE):
             del os.environ[AZURE_SERVICEBUS_NAMESPACE]
-        if AZURE_SERVICEBUS_ACCESS_KEY in os.environ:
+        if os.environ.has_key(AZURE_SERVICEBUS_ACCESS_KEY):
             del os.environ[AZURE_SERVICEBUS_ACCESS_KEY]
-        if AZURE_SERVICEBUS_ISSUER in os.environ:
+        if os.environ.has_key(AZURE_SERVICEBUS_ISSUER):
             del os.environ[AZURE_SERVICEBUS_ISSUER]
 
         # Act
@@ -126,11 +126,11 @@ class ServiceBusTest(AzureTestCase):
         # Act
         sbs = ServiceBusService()
 
-        if AZURE_SERVICEBUS_NAMESPACE in os.environ:
+        if os.environ.has_key(AZURE_SERVICEBUS_NAMESPACE):
             del os.environ[AZURE_SERVICEBUS_NAMESPACE]
-        if AZURE_SERVICEBUS_ACCESS_KEY in os.environ:
+        if os.environ.has_key(AZURE_SERVICEBUS_ACCESS_KEY):
             del os.environ[AZURE_SERVICEBUS_ACCESS_KEY]
-        if AZURE_SERVICEBUS_ISSUER in os.environ:
+        if os.environ.has_key(AZURE_SERVICEBUS_ISSUER):
             del os.environ[AZURE_SERVICEBUS_ISSUER]
 
         # Assert
@@ -1212,7 +1212,7 @@ class ServiceBusTest(AzureTestCase):
 
     def test_unicode_create_queue_unicode_name(self):
         # Arrange
-        self.queue_name = self.queue_name + '啊齄丂狛狜'
+        self.queue_name = self.queue_name + u'啊齄丂狛狜'
 
         # Act
         with self.assertRaises(WindowsAzureError):
@@ -1252,7 +1252,7 @@ class ServiceBusTest(AzureTestCase):
 
         # Act
         with self.assertRaises(WindowsAzureError):
-            created = self.sbs.create_subscription(self.topic_name, 'MySubscription啊齄丂狛狜')
+            created = self.sbs.create_subscription(self.topic_name, u'MySubscription啊齄丂狛狜')
 
         # Assert
 

@@ -38,11 +38,11 @@ class _ServiceManagementClient(object):
         self.host = host
     
         if not self.cert_file:
-            if AZURE_MANAGEMENT_CERTFILE in os.environ:
+            if os.environ.has_key(AZURE_MANAGEMENT_CERTFILE):
                 self.cert_file = os.environ[AZURE_MANAGEMENT_CERTFILE]
         
         if not self.subscription_id:
-            if AZURE_MANAGEMENT_SUBSCRIPTIONID in os.environ:
+            if os.environ.has_key(AZURE_MANAGEMENT_SUBSCRIPTIONID):
                 self.subscription_id = os.environ[AZURE_MANAGEMENT_SUBSCRIPTIONID]
     
         if not self.cert_file or not self.subscription_id:
@@ -61,7 +61,7 @@ class _ServiceManagementClient(object):
         res = ServiceManagementService(self.subscription_id, self.cert_file)
         old_filter = self._filter
         def new_filter(request):
-            return list(filter(request, old_filter))
+            return filter(request, old_filter)
 
         res._filter = new_filter
         return res
